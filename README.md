@@ -1,8 +1,16 @@
-# PTKP – Plugin System Framework 🛠️
-PTKP is a lightweight and flexible plugin system framework built for Java applications. It provides a simple yet powerful foundation for building extensible systems using a modular plugin architecture.
+# Jonion – A layered approach to Java plugins
+Jonion is a lightweight, flexible plugin framework for Java applications.
+It provides a clean, modular architecture that makes it easy to build extensible systems by “layering” functionality through plugins.
 
-## <img width="1920" height="1080" alt="banner-large" src="https://github.com/user-attachments/assets/4694ca2e-4736-4318-b306-e0c98ca59088" />
-🚀 Getting Started
+## ✨ Features
+- Lightweight & Simple — a clean, minimal API for easy integration.
+- Per-Module Configurations — automatic configuration handling for each plugin.
+- Descriptor System — built-in support for module metadata and custom descriptor templates.
+- Multi-format Support — YAML out of the box, with adapters for any other format.
+- Extensible — customize loaders, lifecycles, and file formats with ease.
+…and more. Designed to grow with your application's needs.
+
+## 🚀 Getting Started
 
 ### Prerequisites
 
@@ -10,31 +18,28 @@ PTKP is a lightweight and flexible plugin system framework built for Java applic
 - Maven
 
 ## 📦 Installation
-To include ptkp in your project, add the following dependency and repository to your ``pom.xml``:
+To include Jonion in your project, add the following dependency and repository to your ``pom.xml``:
 
 ### Dependency
 ```xml
 <dependency>
-    <groupId>com.pixelservices.plugin</groupId>
-    <artifactId>ptkp</artifactId>
-    <version>${ptkpversion}</version>
+    <groupId>dev.siea.jonion</groupId>
+    <artifactId>Jonion</artifactId>
+    <version>${jonionversion}</version>
 </dependency>
 ```
-### Repository
-```xml
-<repository>
-    <id>pixel-services-releases</id>
-    <name>Pixel Services</name>
-    <url>https://maven.pixel-services.com/releases</url>
-</repository>
-```
 
-Replace ```${ptkpversion}``` with the latest available version. You can find the latest release on the [Maven Repository](https://maven.pixel-services.com/releases)
+Replace ```${jonionversion}``` with the latest available version.
 
 ## Contributing
-We welcome contributions! To contribute to ptkp:
-1. Fork the repository: [ptkp on GitHub](https://github.com/Pixel-Services/ptkp)
+We welcome contributions! To contribute to Jonion:
+1. Fork the repository: [Jonion on GitHub](https://github.com/sieadev/jonion)
 2. Create a feature branch: `git checkout -b feature-name`
 3. Commit your changes: `git commit -m 'Add feature'`
 4. Push to the branch: `git push origin feature-name`
 5. Submit a pull request.
+
+## 🧅 Why “Jonion”?
+Because good apps, like onions, have **layers**. Java software benefits from modularity — Jonion makes that possible.
+
+(And because naming things is hard.)
