@@ -4,8 +4,8 @@ import dev.siea.jonion.configuration.finder.PluginConfigurationFinder;
 import dev.siea.jonion.descriptor.PluginDescriptor;
 import dev.siea.jonion.exceptions.PluginLoadException;
 import dev.siea.jonion.lifecycle.PluginState;
-import dev.siea.jonion.manager.PluginManager;
 import dev.siea.jonion.loader.CustomClassLoader;
+import dev.siea.jonion.manager.PluginManager;
 
 import java.nio.file.Path;
 

@@ -1,6 +1,5 @@
 package dev.siea.jonion.configuration;
 
-import com.pixelservices.logger.Logger;
 import dev.siea.jonion.exceptions.ConfigSaveException;
 import org.simpleyaml.configuration.file.YamlConfiguration;
 

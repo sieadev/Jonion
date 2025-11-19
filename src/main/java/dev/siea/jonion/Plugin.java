@@ -1,10 +1,10 @@
 package dev.siea.jonion;
 
-import com.pixelservices.logger.Logger;
-import com.pixelservices.logger.LoggerFactory;
 import dev.siea.jonion.configuration.PluginConfig;
 import dev.siea.jonion.configuration.finder.PluginConfigurationFinder;
 import dev.siea.jonion.descriptor.PluginDescriptor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public abstract class Plugin {
     private PluginWrapper pluginWrapper;

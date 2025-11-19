@@ -32,12 +32,12 @@ public class DefaultPluginManager extends AbstractPluginManager {
                 }
             } catch (Throwable e) {
                 pluginWrapper.setState(PluginState.FAILED);
-                logger.error("Failed to start plugin: " + pluginWrapper.getPluginDescriptor().getPluginId(), e);
+                logger.error("Failed to start plugin: {}", pluginWrapper.getPluginDescriptor().getPluginId(), e);
                 failedCount.getAndIncrement();
             }
         });
 
-        logger.info("Successfully started " + (getPlugins().size() - failedCount.get()) + " plugins. Failed to start " + failedCount.get() + " plugins.");
+        logger.info("Successfully started {} plugins. Failed to start {} plugins.", getPlugins().size() - failedCount.get(), failedCount.get());
     }
 
     public void stop() {
@@ -48,7 +48,7 @@ public class DefaultPluginManager extends AbstractPluginManager {
                 }
             } catch (Throwable e){
                 pluginWrapper.setState(PluginState.FAILED);
-                logger.error("Failed to stop plugin: " + pluginWrapper.getPluginDescriptor().getPluginId(), e);
+                logger.error("Failed to stop plugin: {}", pluginWrapper.getPluginDescriptor().getPluginId(), e);
             }
         });
 

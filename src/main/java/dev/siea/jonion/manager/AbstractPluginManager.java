@@ -1,6 +1,5 @@
 package dev.siea.jonion.manager;
 
-import com.pixelservices.logger.Logger;
 import dev.siea.jonion.PluginWrapper;
 import dev.siea.jonion.configuration.finder.PluginConfigurationFinder;
 import dev.siea.jonion.configuration.finder.YamlConfigurationFinder;
@@ -12,6 +11,8 @@ import dev.siea.jonion.exceptions.CircularDependencyException;
 import dev.siea.jonion.exceptions.MissingDependencyException;
 import dev.siea.jonion.exceptions.PluginLoadException;
 import dev.siea.jonion.lifecycle.PluginState;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -22,7 +23,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public abstract class AbstractPluginManager implements PluginManager {
-    protected final Logger logger = Logger.getLogger(this.getClass());
+    protected final Logger logger = LoggerFactory.getLogger(this.getClass());
     private final List<PluginWrapper> pluginWrappers = new ArrayList<>();
     private final PluginDescriptorFinder descriptorFinder;
     private final PluginConfigurationFinder configurationFinder;
@@ -95,9 +96,9 @@ public abstract class AbstractPluginManager implements PluginManager {
             }
             try {
                 pluginWrapper.load();
-                logger.debug("Loaded plugin: " + pluginWrapper.getPluginDescriptor().getPluginId());
+                logger.debug("Loaded plugin: {}", pluginWrapper.getPluginDescriptor().getPluginId());
             } catch (PluginLoadException e) {
-                logger.error("Failed to load plugin: " + pluginWrapper.getPluginDescriptor().getPluginId(), e);
+                logger.error("Failed to load plugin: {}", pluginWrapper.getPluginDescriptor().getPluginId(), e);
             }
         });
     }
@@ -168,17 +169,17 @@ public abstract class AbstractPluginManager implements PluginManager {
 
     protected void createPluginWrapperFromPath(Path path) {
         PluginDescriptor pluginDescriptor = descriptorFinder.findPluginDescriptor(path);
-        logger.debug("Creating plugin wrapper from path: " + path);
+        logger.debug("Creating plugin wrapper from path: {}", path);
         if (pluginDescriptor == null) {
-            logger.error("DescriptionFinder was unable to find a plugin descriptor for path: " + path);
+            logger.error("DescriptionFinder was unable to find a plugin descriptor for path: {}", path);
             return;
         }
         String pluginId = pluginDescriptor.getPluginId();
         if (getPlugin(pluginId) != null) {
-            logger.error("Duplicate found. A plugin with the ID " + pluginId + " is already registered.");
+            logger.error("Duplicate found. A plugin with the ID {} is already registered.", pluginId);
             return;
         }
-        logger.debug("Found plugin descriptor for " + pluginId);
+        logger.debug("Found plugin descriptor for {}", pluginId);
         pluginWrappers.add(new PluginWrapper(this, pluginDescriptor, configurationFinder, path));
     }
 }
