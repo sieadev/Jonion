@@ -13,6 +13,7 @@ on:
 jobs:
   publish:
     runs-on: ubuntu-latest
+
     steps:
       # 1️⃣ Checkout repository
       - name: Checkout
@@ -71,13 +72,13 @@ jobs:
           mkdir -p ~/.m2
           cat > ~/.m2/settings.xml <<EOF
   <settings>
-    <servers>
-      <server>
-        <id>central</id>
-        <username>${{ secrets.OSSRH_USERNAME }}</username>
-        <password>${{ secrets.OSSRH_TOKEN }}</password>
-      </server>
-    </servers>
+  <servers>
+  <server>
+  <id>central</id>
+  <username>${{ secrets.OSSRH_USERNAME }}</username>
+  <password>${{ secrets.OSSRH_TOKEN }}</password>
+  </server>
+  </servers>
   </settings>
   EOF
 
@@ -86,5 +87,4 @@ jobs:
   env:
     GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
     GPG_KEY_ID: ${{ secrets.GPG_KEY_ID }}
-  run: |
-    mvn central:publish -B
+  run: mvn central:publish -B
