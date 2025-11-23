@@ -2,89 +2,59 @@ name: Publish to Maven Central
 
 on:
   release:
-    types: [published]
+    types: [created]
   workflow_dispatch:
-    inputs:
-      version:
-        description: 'Version to publish'
-        required: true
-        type: string
 
 jobs:
   publish:
+    name: Publish to Maven Central
     runs-on: ubuntu-latest
-
+    
+    permissions:
+      contents: read
+      id-token: write
+    
     steps:
-      # 1️⃣ Checkout repository
-      - name: Checkout
+      - name: Checkout code
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
-      # 2️⃣ Setup Java
       - name: Set up JDK 17
         uses: actions/setup-java@v4
         with:
           java-version: '17'
           distribution: 'temurin'
+          server-id: central
+          server-username: MAVEN_USERNAME
+          server-password: MAVEN_PASSWORD
+          gpg-private-key: ${{ secrets.GPG_PRIVATE_KEY }}
+          gpg-passphrase: MAVEN_GPG_PASSPHRASE
 
-      # 3️⃣ Import GPG key
-      - name: Import GPG key
+      - name: Configure GPG Key
+        env:
+          GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
+          GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
         run: |
-          echo "${{ secrets.GPG_PRIVATE_KEY }}" | gpg --batch --import
-          gpg --list-secret-keys --keyid-format LONG
-
-      # 4️⃣ Determine version
-      - name: Determine version
-        id: version
-        run: |
-          if [ "${{ github.event_name }}" == "release" ]; then
-            VERSION="${{ github.event.release.tag_name }}"
-            VERSION=${VERSION#v}
-          else
-            VERSION="${{ github.event.inputs.version }}"
+          if [ -n "$GPG_PRIVATE_KEY" ]; then
+            echo "$GPG_PRIVATE_KEY" | gpg --batch --import
+            gpg --list-secret-keys --keyid-format LONG
           fi
-          echo "version=$VERSION" >> $GITHUB_OUTPUT
-          echo "Publishing version: $VERSION"
 
-      # 5️⃣ Update pom.xml version if workflow_dispatch
-      - name: Update pom.xml version
-        if: github.event_name == 'workflow_dispatch'
-        run: |
-          VERSION="${{ steps.version.outputs.version }}"
-          sed -i "s#<version>.*</version>#<version>$VERSION</version>#" pom.xml
-
-      # 6️⃣ Cache Maven dependencies
-      - name: Cache Maven
+      - name: Cache Maven dependencies
         uses: actions/cache@v4
         with:
           path: ~/.m2
           key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
           restore-keys: ${{ runner.os }}-m2
 
-      # 7️⃣ Build & verify
-      - name: Build & Test
-        run: mvn clean verify
-
-      # 8️⃣ Configure Maven settings (OSSRH credentials)
-      - name: Configure Maven settings
+      - name: Build and publish to Maven Central
+        env:
+          MAVEN_USERNAME: ${{ secrets.OSSRH_USERNAME }}
+          MAVEN_PASSWORD: ${{ secrets.OSSRH_TOKEN }}
+          MAVEN_GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
         run: |
-          mkdir -p ~/.m2
-          cat > ~/.m2/settings.xml <<EOF
-  <settings>
-  <servers>
-  <server>
-  <id>central</id>
-  <username>${{ secrets.OSSRH_USERNAME }}</username>
-  <password>${{ secrets.OSSRH_TOKEN }}</password>
-  </server>
-  </servers>
-  </settings>
-  EOF
+          mvn clean deploy \
+            --batch-mode \
+            --no-transfer-progress
 
-# 9️⃣ Publish using central-publishing-maven-plugin
-- name: Publish to Maven Central
-  env:
-    GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
-    GPG_KEY_ID: ${{ secrets.GPG_KEY_ID }}
-  run: mvn central:publish -B
