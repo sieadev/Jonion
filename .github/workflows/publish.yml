@@ -41,6 +41,34 @@ jobs:
             gpg --list-secret-keys --keyid-format LONG
           fi
 
+      - name: Upload GPG Public Key to Key Server
+        env:
+          GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
+        run: |
+          if [ -n "$GPG_PRIVATE_KEY" ]; then
+            # Extract key ID
+            KEY_ID=$(gpg --list-secret-keys --keyid-format LONG | grep -E "^(sec|rsa)" | head -1 | awk '{print $2}' | cut -d'/' -f2)
+            echo "Key ID: $KEY_ID"
+            
+            # Export public key
+            gpg --armor --export "$KEY_ID" > public-key.asc
+            echo "Public key exported"
+            
+            # Display key fingerprint for verification
+            echo "Key fingerprint:"
+            gpg --fingerprint "$KEY_ID"
+            
+            # Upload to multiple key servers for redundancy
+            # Using || true to not fail if key is already uploaded or upload fails
+            echo "Uploading public key to key servers (this may take a moment)..."
+            gpg --keyserver keyserver.ubuntu.com --send-keys "$KEY_ID" 2>&1 || echo "Upload to keyserver.ubuntu.com failed or key already exists"
+            gpg --keyserver pgp.mit.edu --send-keys "$KEY_ID" 2>&1 || echo "Upload to pgp.mit.edu failed or key already exists"
+            gpg --keyserver keys.openpgp.org --send-keys "$KEY_ID" 2>&1 || echo "Upload to keys.openpgp.org failed or key already exists"
+            
+            echo "Note: If this is your first time, wait a few minutes for the key to propagate before publishing."
+            echo "You can verify the key is available by running: gpg --keyserver keyserver.ubuntu.com --recv-keys $KEY_ID"
+          fi
+
       - name: Cache Maven dependencies
         uses: actions/cache@v4
         with:
