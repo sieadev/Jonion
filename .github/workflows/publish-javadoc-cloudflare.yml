@@ -6,6 +6,8 @@ on:
   push:
     tags:
       - 'v*.*.*'
+    branches:
+      - javadocs
   workflow_dispatch:
 
 jobs:
