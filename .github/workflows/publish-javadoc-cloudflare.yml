@@ -59,27 +59,15 @@ jobs:
 
       - name: Build Javadoc (Maven)
         if: steps.tool.outputs.tool == 'maven'
-        run: |
-          mvn -q compile javadoc:javadoc -Ddoclint=none
+        run: mvn -q package -DskipTests
 
       - name: Build Javadoc (Gradle)
         if: steps.tool.outputs.tool == 'gradle'
         run: ./gradlew -q javadoc
 
-      - name: Set Javadoc output path
-        id: javadoc_path
-        run: |
-          if [ "${{ steps.tool.outputs.tool }}" = "maven" ]; then
-            echo "path=target/apidocs" >> $GITHUB_OUTPUT
-          else
-            echo "path=build/docs/javadoc" >> $GITHUB_OUTPUT
-          fi
-
       - name: Assemble deploy directory
         run: |
-          JAVADOC_DIR="${{ steps.javadoc_path.outputs.path }}"
           VERSION="${{ steps.version.outputs.version }}"
-
           if [ -z "$VERSION" ]; then
             echo "::error::Version could not be extracted."
             exit 1
@@ -92,8 +80,19 @@ jobs:
           fi
 
           mkdir -p site/"$VERSION_DIR" site/latest
-          cp -r "$JAVADOC_DIR"/* site/"$VERSION_DIR"/
-          cp -r "$JAVADOC_DIR"/* site/latest/
+
+          if [ "${{ steps.tool.outputs.tool }}" = "maven" ]; then
+            JAR=$(ls target/*-javadoc.jar 2>/dev/null | head -1)
+            if [ -z "$JAR" ]; then
+              echo "::error::No *-javadoc.jar found in target/"
+              exit 1
+            fi
+            unzip -o -q "$JAR" -d site/latest
+            cp -r site/latest/* site/"$VERSION_DIR"/
+          else
+            cp -r build/docs/javadoc/* site/"$VERSION_DIR"/
+            cp -r build/docs/javadoc/* site/latest/
+          fi
 
           echo "Deployed version dir: $VERSION_DIR"
 
