@@ -3,6 +3,8 @@ package dev.siea.jonion.descriptor.finder;
 import dev.siea.jonion.dependency.PluginDependency;
 import dev.siea.jonion.descriptor.DefaultPluginDescriptor;
 import dev.siea.jonion.descriptor.PluginDescriptor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -18,6 +20,7 @@ import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
 public class XmlDescriptorFinder implements PluginDescriptorFinder {
+    private static final Logger log = LoggerFactory.getLogger(XmlDescriptorFinder.class);
     private final String descriptorFileName;
 
     public XmlDescriptorFinder() {
@@ -42,7 +45,8 @@ public class XmlDescriptorFinder implements PluginDescriptorFinder {
             } else {
                 return null;
             }
-        } catch (Exception ignored) {
+        } catch (Exception e) {
+            log.debug("Could not read plugin descriptor from {}: {}", path, e.getMessage(), e);
             return null;
         }
 
