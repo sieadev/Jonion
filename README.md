@@ -9,7 +9,7 @@ It provides a clean, modular architecture that makes it easy to build extensible
 - Lightweight & Simple — a clean, minimal API for easy integration.
 - Per-Module Configurations — automatic configuration handling for each plugin.
 - Descriptor System — built-in support for module metadata and custom descriptor templates.
-- Multi-format Support — YAML out of the box, with adapters for any other format.
+- Multi-format Support — YAML and XML out of the box, with adapters for any other format.
 - Extensible — customize loaders, lifecycles, and file formats with ease.
 …and more. Designed to grow with your application's needs.
 
