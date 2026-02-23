@@ -9,6 +9,7 @@ import org.simpleyaml.configuration.file.YamlConfiguration;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Path;
+import java.util.Collections;
 import java.util.List;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
@@ -43,6 +44,9 @@ public class YamlDescriptorFinder implements PluginDescriptorFinder {
         String version = yamlConfig.getString("version", "UNDEFINED");
         String pluginClass = yamlConfig.getString("main");
         List<String> authors = yamlConfig.getStringList("authors");
+        if (authors == null) {
+            authors = Collections.emptyList();
+        }
         String license = yamlConfig.getString("license", "UNDEFINED");
         DefaultPluginDescriptor descriptor = new DefaultPluginDescriptor(pluginId, description, version, pluginClass, authors, license);
 
