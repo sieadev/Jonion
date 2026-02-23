@@ -230,8 +230,9 @@ public abstract class AbstractPluginManager implements PluginManager {
             return;
         }
         String pluginId = pluginDescriptor.getPluginId();
-        if (getPlugin(pluginId) != null) {
-            logger.error("Duplicate found. A plugin with the ID {} is already registered.", pluginId);
+        PluginWrapper existing = getPlugin(pluginId);
+        if (existing != null) {
+            logger.error("Duplicate found. A plugin with the ID {} is already registered. Existing: {}, duplicate: {}", pluginId, existing.getPath(), path);
             return;
         }
         logger.debug("Found plugin descriptor for {}", pluginId);
