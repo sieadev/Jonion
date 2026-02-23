@@ -21,6 +21,11 @@ public class YamlPluginConfig extends PluginConfig {
     }
 
     @Override
+    public boolean containsKey(String key) {
+        return yamlConfig.get(key) != null;
+    }
+
+    @Override
     public String getString(String path) {
         return yamlConfig.getString(path);
     }
