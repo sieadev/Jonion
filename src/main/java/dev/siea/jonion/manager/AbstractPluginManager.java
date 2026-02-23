@@ -22,6 +22,25 @@ import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+/**
+ * Base implementation of {@link PluginManager} that discovers plugins from a
+ * directory, creates wrappers, and loads them in dependency order.
+ * <p>
+ * Subclasses typically add lifecycle behavior (e.g. start/stop) by overriding
+ * or extending the load/unload flow. This class handles:
+ * </p>
+ * <ul>
+ *   <li>Scanning a plugin directory for JAR files</li>
+ *   <li>Finding descriptors and configurations via pluggable finders</li>
+ *   <li>Creating {@link PluginWrapper} instances and sorting by dependencies</li>
+ *   <li>Loading plugins and detecting circular or missing dependencies</li>
+ * </ul>
+ *
+ * @see PluginManager
+ * @see PluginWrapper
+ * @see PluginDescriptor
+ * @see PluginConfigurationFinder
+ */
 public abstract class AbstractPluginManager implements PluginManager {
     protected final Logger logger = LoggerFactory.getLogger(this.getClass());
     private final List<PluginWrapper> pluginWrappers = new ArrayList<>();
@@ -29,18 +48,37 @@ public abstract class AbstractPluginManager implements PluginManager {
     private final PluginConfigurationFinder configurationFinder;
     private final Path pluginDirectory;
 
+    /** Creates a manager that scans the default {@code plugins} directory with YAML descriptor and configuration finders. */
     public AbstractPluginManager() {
         this(Paths.get("plugins"));
     }
 
+    /**
+     * Creates a manager that scans the given directory with the default YAML descriptor finder.
+     *
+     * @param directory the path to the plugin directory (created if it does not exist)
+     */
     public AbstractPluginManager(Path directory) {
         this(directory, new YamlDescriptorFinder());
     }
 
+    /**
+     * Creates a manager with a custom descriptor finder and default YAML configuration finder.
+     *
+     * @param directory        the path to the plugin directory (created if it does not exist)
+     * @param descriptorFinder the finder used to read plugin descriptors from JARs
+     */
     public AbstractPluginManager(Path directory, PluginDescriptorFinder descriptorFinder) {
         this(directory, descriptorFinder, new YamlConfigurationFinder());
     }
 
+    /**
+     * Creates a manager with custom descriptor and configuration finders.
+     *
+     * @param directory             the path to the plugin directory (created if it does not exist)
+     * @param descriptorFinder     the finder used to read plugin descriptors from JARs
+     * @param configurationFinder  the finder used to locate plugin configuration files
+     */
     public AbstractPluginManager(Path directory, PluginDescriptorFinder descriptorFinder, PluginConfigurationFinder configurationFinder) {
         pluginDirectory = directory;
 
@@ -78,6 +116,10 @@ public abstract class AbstractPluginManager implements PluginManager {
                 .orElse(null);
     }
 
+    /**
+     * Scans the plugin directory for JAR files and creates a {@link PluginWrapper} for each.
+     * Duplicate plugin IDs and paths without a valid descriptor are skipped (and logged).
+     */
     protected void createPluginWrappers() {
         try (Stream<Path> paths = Files.walk(pluginDirectory)) {
             paths.filter(Files::isRegularFile)
@@ -103,6 +145,7 @@ public abstract class AbstractPluginManager implements PluginManager {
         });
     }
 
+    /** Unloads all currently loaded plugins and clears the internal list of wrappers. */
     protected void unloadPlugins() {
         pluginWrappers.forEach(pluginWrapper -> {
             if (pluginWrapper.getState() == PluginState.LOADED) {
@@ -113,6 +156,11 @@ public abstract class AbstractPluginManager implements PluginManager {
         pluginWrappers.clear();
     }
 
+    /**
+     * Unloads a single plugin by ID and removes it from the manager.
+     *
+     * @param pluginId the ID of the plugin to unload
+     */
     protected void unloadPlugin(String pluginId) {
         PluginWrapper pluginWrapper = getPlugin(pluginId);
         if (pluginWrapper != null) {
@@ -121,6 +169,7 @@ public abstract class AbstractPluginManager implements PluginManager {
         }
     }
 
+    /** Unloads all plugins, rescans the plugin directory, and loads plugins again in dependency order. */
     protected void reloadPlugins() {
         unloadPlugins();
         createPluginWrappers();
@@ -167,6 +216,12 @@ public abstract class AbstractPluginManager implements PluginManager {
         sortedPlugins.add(plugin);
     }
 
+    /**
+     * Creates a single {@link PluginWrapper} from a JAR path and adds it to the internal list
+     * if the descriptor is valid and the plugin ID is not already registered.
+     *
+     * @param path the path to the plugin JAR file
+     */
     protected void createPluginWrapperFromPath(Path path) {
         PluginDescriptor pluginDescriptor = descriptorFinder.findPluginDescriptor(path);
         logger.debug("Creating plugin wrapper from path: {}", path);
