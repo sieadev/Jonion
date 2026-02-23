@@ -60,7 +60,7 @@ jobs:
       - name: Build Javadoc (Maven)
         if: steps.tool.outputs.tool == 'maven'
         run: |
-          mvn -q compile javadoc:javadoc -DdestDir=target/site/apidocs -Ddoclint=none
+          mvn -q compile javadoc:javadoc -Ddoclint=none
 
       - name: Build Javadoc (Gradle)
         if: steps.tool.outputs.tool == 'gradle'
@@ -70,7 +70,7 @@ jobs:
         id: javadoc_path
         run: |
           if [ "${{ steps.tool.outputs.tool }}" = "maven" ]; then
-            echo "path=target/site/apidocs" >> $GITHUB_OUTPUT
+            echo "path=target/apidocs" >> $GITHUB_OUTPUT
           else
             echo "path=build/docs/javadoc" >> $GITHUB_OUTPUT
           fi
