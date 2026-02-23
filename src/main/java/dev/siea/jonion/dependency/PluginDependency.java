@@ -1,4 +1,4 @@
-package dev.siea.jonion.depedency;
+package dev.siea.jonion.dependency;
 
 public class PluginDependency {
     private final String pluginId;
