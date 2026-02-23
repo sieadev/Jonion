@@ -14,17 +14,35 @@ import javax.xml.transform.stream.StreamResult;
 import java.io.File;
 import java.nio.file.Path;
 
+/**
+ * {@link PluginConfig} backed by an XML document (W3C DOM).
+ * <p>
+ * Keys use dot notation to navigate nested elements (e.g. {@code section.key}). Elements
+ * are created on {@link #set(String, Object)} if missing. Created by
+ * {@link dev.siea.jonion.configuration.finder.XmlConfigurationFinder}.
+ * </p>
+ *
+ * @see PluginConfig
+ * @see dev.siea.jonion.configuration.finder.XmlConfigurationFinder
+ */
 public class XmlPluginConfig extends PluginConfig {
     private static final String ROOT_TAG = "config";
 
     private final Document document;
     private final File file;
 
+    /**
+     * Creates a config wrapping the given document and optional file path for save.
+     *
+     * @param document the DOM document (root element typically named {@code config})
+     * @param filePath path where the config will be saved, or null for in-memory only (save no-op)
+     */
     public XmlPluginConfig(Document document, Path filePath) {
         this.document = document;
         this.file = filePath != null ? new File(filePath.toString()) : null;
     }
 
+    /** Returns the underlying DOM document for advanced use. */
     public Document getDocument() {
         return document;
     }

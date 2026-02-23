@@ -17,13 +17,31 @@ import java.util.List;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
+/**
+ * Finds and parses a plugin descriptor from an XML file inside the plugin JAR.
+ * <p>
+ * Looks for a file (default {@code plugin.xml}) at the JAR root. Expected structure includes
+ * {@code name}, {@code main}, {@code version}, {@code description}, {@code authors}
+ * (with {@code author} children), {@code license}, and optionally {@code dependencies}
+ * with {@code dependency} elements (attributes {@code id} and {@code optional}).
+ * </p>
+ *
+ * @see PluginDescriptorFinder
+ * @see PluginDescriptor
+ */
 public class XmlDescriptorFinder implements PluginDescriptorFinder {
     private final String descriptorFileName;
 
+    /** Creates a finder that looks for {@code plugin.xml} in the JAR. */
     public XmlDescriptorFinder() {
         this("plugin.xml");
     }
 
+    /**
+     * Creates a finder that looks for the given descriptor file name in the JAR.
+     *
+     * @param descriptorFileName the name of the XML file (e.g. {@code plugin.xml})
+     */
     public XmlDescriptorFinder(String descriptorFileName) {
         this.descriptorFileName = descriptorFileName;
     }

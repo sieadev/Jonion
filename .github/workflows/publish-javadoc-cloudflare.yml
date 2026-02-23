@@ -1,0 +1,109 @@
+# Build Javadocs and deploy to Cloudflare Pages (siea-javadoc).
+# Served at docs.siea.dev/api/* via a Cloudflare Worker that proxies to this project.
+name: Publish Javadoc to Cloudflare Pages
+
+on:
+  push:
+    tags:
+      - 'v*.*.*'
+  workflow_dispatch:
+
+jobs:
+  publish-javadoc:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Detect build tool
+        id: tool
+        run: |
+          if [ -f pom.xml ]; then
+            echo "tool=maven" >> $GITHUB_OUTPUT
+          elif [ -f build.gradle ] || [ -f build.gradle.kts ]; then
+            echo "tool=gradle" >> $GITHUB_OUTPUT
+          else
+            echo "::error::No build tool found. Expected pom.xml or build.gradle(.kts)."
+            exit 1
+          fi
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+          cache: ${{ steps.tool.outputs.tool }}
+
+      - name: Extract version (Maven)
+        if: steps.tool.outputs.tool == 'maven'
+        id: version_maven
+        run: |
+          V=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)
+          echo "version=$V" >> $GITHUB_OUTPUT
+
+      - name: Extract version (Gradle)
+        if: steps.tool.outputs.tool == 'gradle'
+        id: version_gradle
+        run: |
+          V=$(./gradlew -q properties | sed -n 's/^version: //p')
+          echo "version=$V" >> $GITHUB_OUTPUT
+
+      - name: Set version
+        id: version
+        run: |
+          V="${{ steps.version_maven.outputs.version }}${{ steps.version_gradle.outputs.version }}"
+          echo "version=$V" >> $GITHUB_OUTPUT
+
+      - name: Build Javadoc (Maven)
+        if: steps.tool.outputs.tool == 'maven'
+        run: mvn -q package -DskipTests
+
+      - name: Build Javadoc (Gradle)
+        if: steps.tool.outputs.tool == 'gradle'
+        run: ./gradlew -q javadoc
+
+      - name: Assemble deploy directory
+        run: |
+          VERSION="${{ steps.version.outputs.version }}"
+          if [ -z "$VERSION" ]; then
+            echo "::error::Version could not be extracted."
+            exit 1
+          fi
+
+          if [[ "$VERSION" == *-SNAPSHOT ]]; then
+            VERSION_DIR="snapshot"
+          else
+            VERSION_DIR="$VERSION"
+          fi
+
+          mkdir -p site/"$VERSION_DIR" site/latest
+
+          if [ "${{ steps.tool.outputs.tool }}" = "maven" ]; then
+            JAR=$(ls target/*-javadoc.jar 2>/dev/null | head -1)
+            if [ -z "$JAR" ]; then
+              echo "::error::No *-javadoc.jar found in target/"
+              exit 1
+            fi
+            unzip -o -q "$JAR" -d site/latest
+            cp -r site/latest/* site/"$VERSION_DIR"/
+          else
+            cp -r build/docs/javadoc/* site/"$VERSION_DIR"/
+            cp -r build/docs/javadoc/* site/latest/
+          fi
+
+          echo "Deployed version dir: $VERSION_DIR"
+
+      - name: Sanity check
+        run: |
+          if [ ! -f site/latest/index.html ]; then
+            echo "::error::site/latest/index.html not found. Javadoc build may have failed or output is in an unexpected location."
+            exit 1
+          fi
+
+      - name: Deploy to Cloudflare Pages
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: pages deploy site --project-name ${{ secrets.CF_PAGES_PROJECT_NAME }} --branch main

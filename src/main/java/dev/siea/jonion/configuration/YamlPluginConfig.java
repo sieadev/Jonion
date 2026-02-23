@@ -7,15 +7,33 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 
+/**
+ * {@link PluginConfig} backed by a YAML file (Simple-YAML).
+ * <p>
+ * Keys use dot notation for nested sections. Created by
+ * {@link dev.siea.jonion.configuration.finder.YamlConfigurationFinder} when resolving
+ * plugin configuration from the filesystem or from inside the plugin JAR.
+ * </p>
+ *
+ * @see PluginConfig
+ * @see dev.siea.jonion.configuration.finder.YamlConfigurationFinder
+ */
 public class YamlPluginConfig extends PluginConfig {
     private final YamlConfiguration yamlConfig;
     private final File file;
 
+    /**
+     * Creates a config wrapping the given YAML configuration and file path for save.
+     *
+     * @param yamlConfig the loaded YAML configuration
+     * @param filePath   path where the config will be saved (parent dir created on save if needed)
+     */
     public YamlPluginConfig(YamlConfiguration yamlConfig, Path filePath) {
         this.yamlConfig = yamlConfig;
         this.file = new File(String.valueOf(filePath));
     }
 
+    /** Returns the underlying YAML configuration for advanced use. */
     public YamlConfiguration getYamlConfiguration() {
         return yamlConfig;
     }

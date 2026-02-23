@@ -1,6 +1,7 @@
 # Jonion – A layered approach to Java plugins
 [![Maven Central](https://img.shields.io/maven-central/v/dev.siea.jonion/Jonion?label=Maven%20Central)](https://central.sonatype.com/artifact/dev.siea.jonion/Jonion)
 [![Documentation](https://img.shields.io/badge/docs-available-brightgreen)](https://docs.siea.dev/jonion/)
+[![API Reference (Javadoc)](https://img.shields.io/badge/API%20Reference-Javadoc-blue)](https://docs.siea.dev/jonion/api/latest/)
 
 Jonion is a lightweight, flexible plugin framework for Java applications.
 It provides a clean, modular architecture that makes it easy to build extensible systems by “layering” functionality through plugins.
