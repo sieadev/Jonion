@@ -10,13 +10,30 @@ import java.nio.file.Path;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
+/**
+ * Finds and loads plugin configuration from YAML files.
+ * <p>
+ * Resolves config under {@code <parent of path>/<pluginId>/<configFileName>} on the filesystem,
+ * or from the root of the JAR at {@code path} if the file is not on disk. Default file name
+ * is {@code config.yml}. Returns a {@link YamlPluginConfig} backed by Simple-YAML.
+ * </p>
+ *
+ * @see PluginConfigurationFinder
+ * @see dev.siea.jonion.configuration.YamlPluginConfig
+ */
 public class YamlConfigurationFinder implements PluginConfigurationFinder {
     private final String configFileName;
 
+    /** Creates a finder that looks for {@code config.yml}. */
     public YamlConfigurationFinder() {
         this("config.yml");
     }
 
+    /**
+     * Creates a finder that looks for the given config file name.
+     *
+     * @param configFileName the default config file name (e.g. {@code config.yml})
+     */
     public YamlConfigurationFinder(String configFileName) {
         this.configFileName = configFileName;
     }

@@ -12,13 +12,30 @@ import java.nio.file.Path;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
+/**
+ * Finds and loads plugin configuration from XML files.
+ * <p>
+ * Resolves config under {@code <parent of path>/<pluginId>/<configFileName>} on the filesystem,
+ * or from the root of the JAR at {@code path} if the file is not on disk. Default file name
+ * is {@code config.xml}. Returns an {@link XmlPluginConfig} backed by a W3C DOM document.
+ * </p>
+ *
+ * @see PluginConfigurationFinder
+ * @see dev.siea.jonion.configuration.XmlPluginConfig
+ */
 public class XmlConfigurationFinder implements PluginConfigurationFinder {
     private final String configFileName;
 
+    /** Creates a finder that looks for {@code config.xml}. */
     public XmlConfigurationFinder() {
         this("config.xml");
     }
 
+    /**
+     * Creates a finder that looks for the given config file name.
+     *
+     * @param configFileName the default config file name (e.g. {@code config.xml})
+     */
     public XmlConfigurationFinder(String configFileName) {
         this.configFileName = configFileName;
     }
