@@ -37,16 +37,22 @@ jobs:
 
       - name: Extract version (Maven)
         if: steps.tool.outputs.tool == 'maven'
-        id: version
+        id: version_maven
         run: |
           V=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)
           echo "version=$V" >> $GITHUB_OUTPUT
 
       - name: Extract version (Gradle)
         if: steps.tool.outputs.tool == 'gradle'
-        id: version
+        id: version_gradle
         run: |
           V=$(./gradlew -q properties | sed -n 's/^version: //p')
+          echo "version=$V" >> $GITHUB_OUTPUT
+
+      - name: Set version
+        id: version
+        run: |
+          V="${{ steps.version_maven.outputs.version }}${{ steps.version_gradle.outputs.version }}"
           echo "version=$V" >> $GITHUB_OUTPUT
 
       - name: Build Javadoc (Maven)
