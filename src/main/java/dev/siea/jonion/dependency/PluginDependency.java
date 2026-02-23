@@ -1,4 +1,4 @@
-package dev.siea.jonion.depedency;
+package dev.siea.jonion.dependency;
 
 /**
  * Declares a dependency on another plugin by ID and whether it is optional.

@@ -1,6 +1,6 @@
 package dev.siea.jonion.descriptor.finder;
 
-import dev.siea.jonion.depedency.PluginDependency;
+import dev.siea.jonion.dependency.PluginDependency;
 import dev.siea.jonion.descriptor.DefaultPluginDescriptor;
 import dev.siea.jonion.descriptor.PluginDescriptor;
 import org.simpleyaml.configuration.ConfigurationSection;

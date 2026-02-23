@@ -1,6 +1,6 @@
 package dev.siea.jonion.descriptor;
 
-import dev.siea.jonion.depedency.PluginDependency;
+import dev.siea.jonion.dependency.PluginDependency;
 
 import java.util.List;
 

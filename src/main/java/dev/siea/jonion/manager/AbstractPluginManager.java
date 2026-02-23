@@ -3,7 +3,7 @@ package dev.siea.jonion.manager;
 import dev.siea.jonion.PluginWrapper;
 import dev.siea.jonion.configuration.finder.PluginConfigurationFinder;
 import dev.siea.jonion.configuration.finder.YamlConfigurationFinder;
-import dev.siea.jonion.depedency.PluginDependency;
+import dev.siea.jonion.dependency.PluginDependency;
 import dev.siea.jonion.descriptor.PluginDescriptor;
 import dev.siea.jonion.descriptor.finder.PluginDescriptorFinder;
 import dev.siea.jonion.descriptor.finder.YamlDescriptorFinder;
