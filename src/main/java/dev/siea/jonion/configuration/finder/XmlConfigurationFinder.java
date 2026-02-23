@@ -1,6 +1,8 @@
 package dev.siea.jonion.configuration.finder;
 
 import dev.siea.jonion.configuration.XmlPluginConfig;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -24,6 +26,7 @@ import java.util.jar.JarFile;
  * @see dev.siea.jonion.configuration.XmlPluginConfig
  */
 public class XmlConfigurationFinder implements PluginConfigurationFinder {
+    private static final Logger log = LoggerFactory.getLogger(XmlConfigurationFinder.class);
     private final String configFileName;
 
     /** Creates a finder that looks for {@code config.xml}. */
@@ -55,6 +58,7 @@ public class XmlConfigurationFinder implements PluginConfigurationFinder {
             try (InputStream inputStream = Files.newInputStream(filePath)) {
                 document = loadDocument(inputStream);
             } catch (IOException e) {
+                log.debug("Could not load config from {}: {}", filePath, e.getMessage(), e);
                 return null;
             }
         } else {
@@ -67,7 +71,8 @@ public class XmlConfigurationFinder implements PluginConfigurationFinder {
                 } else {
                     document = createEmptyDocument();
                 }
-            } catch (IOException ignored) {
+            } catch (IOException e) {
+                log.debug("Could not load config from JAR {}: {}", path, e.getMessage(), e);
                 return null;
             }
         }
@@ -85,6 +90,7 @@ public class XmlConfigurationFinder implements PluginConfigurationFinder {
             DocumentBuilder builder = factory.newDocumentBuilder();
             return builder.parse(inputStream);
         } catch (Exception e) {
+            log.debug("Could not parse XML config: {}", e.getMessage(), e);
             return null;
         }
     }
@@ -97,6 +103,7 @@ public class XmlConfigurationFinder implements PluginConfigurationFinder {
             document.appendChild(document.createElement("config"));
             return document;
         } catch (Exception e) {
+            log.debug("Could not create empty XML document: {}", e.getMessage(), e);
             return null;
         }
     }

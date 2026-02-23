@@ -2,6 +2,8 @@ package dev.siea.jonion.configuration.finder;
 
 import dev.siea.jonion.configuration.YamlPluginConfig;
 import org.simpleyaml.configuration.file.YamlConfiguration;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -22,6 +24,7 @@ import java.util.jar.JarFile;
  * @see dev.siea.jonion.configuration.YamlPluginConfig
  */
 public class YamlConfigurationFinder implements PluginConfigurationFinder {
+    private static final Logger log = LoggerFactory.getLogger(YamlConfigurationFinder.class);
     private final String configFileName;
 
     /** Creates a finder that looks for {@code config.yml}. */
@@ -53,6 +56,7 @@ public class YamlConfigurationFinder implements PluginConfigurationFinder {
             try (InputStream inputStream = Files.newInputStream(filePath)) {
                 yamlConfig.load(inputStream);
             } catch (IOException e) {
+                log.debug("Could not load config from {}: {}", filePath, e.getMessage(), e);
                 return null;
             }
         } else {
@@ -65,7 +69,8 @@ public class YamlConfigurationFinder implements PluginConfigurationFinder {
                 } else {
                     yamlConfig.loadFromString("");
                 }
-            } catch (IOException ignored) {
+            } catch (IOException e) {
+                log.debug("Could not load config from JAR {}: {}", path, e.getMessage(), e);
                 return null;
             }
         }
