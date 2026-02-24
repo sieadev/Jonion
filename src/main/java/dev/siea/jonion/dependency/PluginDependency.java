@@ -1,4 +1,4 @@
-package dev.siea.jonion.depedency;
+package dev.siea.jonion.dependency;
 
 /**
  * Declares a dependency on another plugin by ID and whether it is optional.
@@ -41,10 +41,9 @@ public class PluginDependency {
     public boolean equals(Object dependency) {
         if (this == dependency) {
             return true;
-        } else if (!(dependency instanceof PluginDependency)) {
+        } else if (!(dependency instanceof PluginDependency that)) {
             return false;
         } else {
-            PluginDependency that = (PluginDependency) dependency;
             return this.optional == that.optional && this.pluginId.equals(that.pluginId);
         }
     }

@@ -65,6 +65,7 @@ public class DefaultPluginManager extends AbstractPluginManager {
      */
     public void start() {
         AtomicInteger failedCount = new AtomicInteger();
+        long toStart = getPlugins().stream().filter(p -> p.getState() == PluginState.LOADED).count();
 
         getPlugins().forEach(pluginWrapper -> {
             try {
@@ -78,7 +79,7 @@ public class DefaultPluginManager extends AbstractPluginManager {
             }
         });
 
-        logger.info("Successfully started {} plugins. Failed to start {} plugins.", getPlugins().size() - failedCount.get(), failedCount.get());
+        logger.info("Successfully started {} plugins. Failed to start {} plugins.", toStart - failedCount.get(), failedCount.get());
     }
 
     /**

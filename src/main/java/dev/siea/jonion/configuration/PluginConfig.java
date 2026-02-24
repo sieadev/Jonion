@@ -1,11 +1,13 @@
 package dev.siea.jonion.configuration;
 
 /**
- * Abstract base for plugin configuration access: typed getters, optional default values,
- * setters, and save.
+ * Abstract base for plugin configuration access: key presence check, typed getters with
+ * optional default values, setters, and save.
  * <p>
  * Implementations (e.g. {@link YamlPluginConfig}, {@link XmlPluginConfig}) back the config
- * with a specific format. Keys are typically dot-separated paths. Used by
+ * with a specific format. Keys are typically dot-separated paths. The default-value
+ * overloads (e.g. {@link #getString(String, String)}) use {@link #containsKey(String)} so
+ * the default is only returned when the key is absent. Used by
  * {@link dev.siea.jonion.Plugin#getDefaultConfig()} and {@link dev.siea.jonion.Plugin#getConfig(String)}.
  * </p>
  *
@@ -14,13 +16,21 @@ package dev.siea.jonion.configuration;
  * @see dev.siea.jonion.configuration.finder.PluginConfigurationFinder
  */
 public abstract class PluginConfig {
+    /**
+     * Returns whether a key is present in the configuration.
+     * Default-value overloads use this to apply the default only when the key is absent.
+     *
+     * @param key the config key (dot-separated path)
+     * @return true if the key exists
+     */
+    public abstract boolean containsKey(String key);
+
     /** Returns the string value for the key, or null if absent. */
     public abstract String getString(String key);
 
     /** Returns the string value for the key, or the default if absent or null. */
     public String getString(String key, String defaultValue) {
-        String value = getString(key);
-        return value != null ? value : defaultValue;
+        return containsKey(key) ? getString(key) : defaultValue;
     }
 
     /** Returns the int value for the key (0 if absent or unparseable). */
@@ -28,8 +38,7 @@ public abstract class PluginConfig {
 
     /** Returns the int value for the key, or the default if absent or zero. */
     public int getInt(String key, int defaultValue) {
-        int value = getInt(key);
-        return value != 0 ? value : defaultValue;
+        return containsKey(key) ? getInt(key) : defaultValue;
     }
 
     /** Returns the boolean value for the key. */
@@ -37,7 +46,7 @@ public abstract class PluginConfig {
 
     /** Returns the boolean value for the key, or the default if absent or false. */
     public boolean getBoolean(String key, boolean defaultValue) {
-        return getBoolean(key) || defaultValue;
+        return containsKey(key) ? getBoolean(key) : defaultValue;
     }
 
     /** Returns the double value for the key (0.0 if absent or unparseable). */
@@ -45,8 +54,7 @@ public abstract class PluginConfig {
 
     /** Returns the double value for the key, or the default if absent or zero. */
     public double getDouble(String key, double defaultValue) {
-        double value = getDouble(key);
-        return value != 0.0 ? value : defaultValue;
+        return containsKey(key) ? getDouble(key) : defaultValue;
     }
 
     /** Returns the long value for the key (0L if absent or unparseable). */
@@ -54,8 +62,7 @@ public abstract class PluginConfig {
 
     /** Returns the long value for the key, or the default if absent or zero. */
     public long getLong(String key, long defaultValue) {
-        long value = getLong(key);
-        return value != 0L ? value : defaultValue;
+        return containsKey(key) ? getLong(key) : defaultValue;
     }
 
     /** Returns the float value for the key (0.0f if absent or unparseable). */
@@ -63,8 +70,7 @@ public abstract class PluginConfig {
 
     /** Returns the float value for the key, or the default if absent or zero. */
     public float getFloat(String key, float defaultValue) {
-        float value = getFloat(key);
-        return value != 0.0f ? value : defaultValue;
+        return containsKey(key) ? getFloat(key) : defaultValue;
     }
 
     /** Returns the byte value for the key (0 if absent or unparseable). */
@@ -81,8 +87,7 @@ public abstract class PluginConfig {
 
     /** Returns the short value for the key, or the default if absent or zero. */
     public short getShort(String key, short defaultValue) {
-        short value = getShort(key);
-        return value != 0 ? value : defaultValue;
+        return containsKey(key) ? getShort(key) : defaultValue;
     }
 
     /** Returns the char value for the key (null character if absent or empty). */
@@ -90,8 +95,7 @@ public abstract class PluginConfig {
 
     /** Returns the char value for the key, or the default if absent or null character. */
     public char getChar(String key, char defaultValue) {
-        char value = getChar(key);
-        return value != '\u0000' ? value : defaultValue;
+        return containsKey(key) ? getChar(key) : defaultValue;
     }
 
     /** Returns the raw value for the key. */
@@ -99,8 +103,7 @@ public abstract class PluginConfig {
 
     /** Returns the raw value for the key, or the default if absent or null. */
     public Object get(String key, Object defaultValue) {
-        Object value = get(key);
-        return value != null ? value : defaultValue;
+        return containsKey(key) ? get(key) : defaultValue;
     }
 
     /** Sets the value for the key. */

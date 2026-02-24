@@ -3,7 +3,7 @@ package dev.siea.jonion.manager;
 import dev.siea.jonion.PluginWrapper;
 import dev.siea.jonion.configuration.finder.PluginConfigurationFinder;
 import dev.siea.jonion.configuration.finder.YamlConfigurationFinder;
-import dev.siea.jonion.depedency.PluginDependency;
+import dev.siea.jonion.dependency.PluginDependency;
 import dev.siea.jonion.descriptor.PluginDescriptor;
 import dev.siea.jonion.descriptor.finder.PluginDescriptorFinder;
 import dev.siea.jonion.descriptor.finder.YamlDescriptorFinder;
@@ -230,8 +230,9 @@ public abstract class AbstractPluginManager implements PluginManager {
             return;
         }
         String pluginId = pluginDescriptor.getPluginId();
-        if (getPlugin(pluginId) != null) {
-            logger.error("Duplicate found. A plugin with the ID {} is already registered.", pluginId);
+        PluginWrapper existing = getPlugin(pluginId);
+        if (existing != null) {
+            logger.error("Duplicate found. A plugin with the ID {} is already registered. Existing: {}, duplicate: {}", pluginId, existing.getPath(), path);
             return;
         }
         logger.debug("Found plugin descriptor for {}", pluginId);

@@ -106,6 +106,11 @@ public class XmlPluginConfig extends PluginConfig {
     }
 
     @Override
+    public boolean containsKey(String path) {
+        return getElement(path) != null;
+    }
+
+    @Override
     public String getString(String path) {
         Element element = getElement(path);
         return getTextContent(element);
