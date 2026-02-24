@@ -1,11 +1,13 @@
 package dev.siea.jonion.configuration;
 
 /**
- * Abstract base for plugin configuration access: typed getters, optional default values,
- * setters, and save.
+ * Abstract base for plugin configuration access: key presence check, typed getters with
+ * optional default values, setters, and save.
  * <p>
  * Implementations (e.g. {@link YamlPluginConfig}, {@link XmlPluginConfig}) back the config
- * with a specific format. Keys are typically dot-separated paths. Used by
+ * with a specific format. Keys are typically dot-separated paths. The default-value
+ * overloads (e.g. {@link #getString(String, String)}) use {@link #containsKey(String)} so
+ * the default is only returned when the key is absent. Used by
  * {@link dev.siea.jonion.Plugin#getDefaultConfig()} and {@link dev.siea.jonion.Plugin#getConfig(String)}.
  * </p>
  *
@@ -17,6 +19,9 @@ public abstract class PluginConfig {
     /**
      * Returns whether a key is present in the configuration.
      * Default-value overloads use this to apply the default only when the key is absent.
+     *
+     * @param key the config key (dot-separated path)
+     * @return true if the key exists
      */
     public abstract boolean containsKey(String key);
 
