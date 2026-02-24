@@ -14,7 +14,7 @@ import java.util.List;
  *
  * @see DefaultPluginDescriptor
  * @see dev.siea.jonion.descriptor.finder.PluginDescriptorFinder
- * @see dev.siea.jonion.depedency.PluginDependency
+ * @see dev.siea.jonion.dependency.PluginDependency
  */
 public interface PluginDescriptor {
     /** Returns the unique plugin identifier. */
