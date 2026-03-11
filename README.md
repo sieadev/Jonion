@@ -1,4 +1,5 @@
-# Jonion – A layered approach to Java plugins
+![jonion-banner](https://github.com/user-attachments/assets/4b6f3c5b-76e3-4492-acd5-bb00d42bd0ad)
+
 [![Maven Central](https://img.shields.io/maven-central/v/dev.siea.jonion/Jonion?label=Maven%20Central)](https://central.sonatype.com/artifact/dev.siea.jonion/Jonion)
 [![Documentation](https://img.shields.io/badge/docs-available-brightgreen)](https://docs.siea.dev/jonion/)
 [![API Reference (Javadoc)](https://img.shields.io/badge/API%20Reference-Javadoc-blue)](https://docs.siea.dev/jonion/api/latest/)
